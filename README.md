@@ -12,5 +12,8 @@
 
 **Herramientas utilizadas:** 
 - SQL Maria DB
+- VSCode
+- MySQL Workbench
+
 
 
