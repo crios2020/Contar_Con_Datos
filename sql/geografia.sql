@@ -1,8 +1,5 @@
 DROP DATABASE IF EXISTS estadisticas_eph;
-CREATE DATABASE IF NOT EXISTS estadisticas_eph
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-
+CREATE DATABASE IF NOT EXISTS estadisticas_eph;
 USE estadisticas_eph;
 
 -- =====================================================
@@ -12,15 +9,15 @@ USE estadisticas_eph;
 CREATE TABLE regiones_eph (
     codigo_region SMALLINT UNSIGNED PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL UNIQUE
-) ENGINE = InnoDB;
+);
 
 INSERT INTO regiones_eph (codigo_region, nombre) VALUES
-(1,  'Gran Buenos Aires'),
-(40, 'Noroeste (NOA)'),
-(41, 'Noreste (NEA)'),
-(42, 'Cuyo'),
-(43, 'Pampeana'),
-(44, 'Patagonia');
+    (1,  'Gran Buenos Aires'),
+    (40, 'Noroeste (NOA)'),
+    (41, 'Noreste (NEA)'),
+    (42, 'Cuyo'),
+    (43, 'Pampeana'),
+    (44, 'Patagonia');
 
 
 -- =====================================================
@@ -35,8 +32,7 @@ CREATE TABLE aglomerados_eph (
     CONSTRAINT fk_aglomerado_region
         FOREIGN KEY (codigo_region)
         REFERENCES regiones_eph (codigo_region)
-) ENGINE = InnoDB;
-
+);
 
 
 INSERT INTO aglomerados_eph
@@ -75,12 +71,6 @@ VALUES
     ('91', 'Rawson-Trelew', 44),
     ('93', 'Viedma-Carmen de Patagones', 44);
 
-/*
-SELECT COUNT(*) AS total_codigos
-FROM aglomerados_eph;
-
-select * from aglomerados_eph;
-*/
 
 -- =====================================================
 -- 3. TABLA DE PROVINCIAS Y CABA
@@ -90,41 +80,40 @@ CREATE TABLE provincias (
     id_provincia SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(60) NOT NULL UNIQUE,
     es_caba BOOLEAN NOT NULL DEFAULT FALSE
-) ENGINE = InnoDB;
+);
 
 INSERT INTO provincias (nombre, es_caba) VALUES
-('Buenos Aires', FALSE),
-('Catamarca', FALSE),
-('Chaco', FALSE),
-('Chubut', FALSE),
-('Córdoba', FALSE),
-('Corrientes', FALSE),
-('Entre Ríos', FALSE),
-('Formosa', FALSE),
-('Jujuy', FALSE),
-('La Pampa', FALSE),
-('La Rioja', FALSE),
-('Mendoza', FALSE),
-('Misiones', FALSE),
-('Neuquén', FALSE),
-('Río Negro', FALSE),
-('Salta', FALSE),
-('San Juan', FALSE),
-('San Luis', FALSE),
-('Santa Cruz', FALSE),
-('Santa Fe', FALSE),
-('Santiago del Estero', FALSE),
-('Tierra del Fuego', FALSE),
-('Tucumán', FALSE),
-('Ciudad Autónoma de Buenos Aires', TRUE);
+    ('Buenos Aires', FALSE),
+    ('Catamarca', FALSE),
+    ('Chaco', FALSE),
+    ('Chubut', FALSE),
+    ('Córdoba', FALSE),
+    ('Corrientes', FALSE),
+    ('Entre Ríos', FALSE),
+    ('Formosa', FALSE),
+    ('Jujuy', FALSE),
+    ('La Pampa', FALSE),
+    ('La Rioja', FALSE),
+    ('Mendoza', FALSE),
+    ('Misiones', FALSE),
+    ('Neuquén', FALSE),
+    ('Río Negro', FALSE),
+    ('Salta', FALSE),
+    ('San Juan', FALSE),
+    ('San Luis', FALSE),
+    ('Santa Cruz', FALSE),
+    ('Santa Fe', FALSE),
+    ('Santiago del Estero', FALSE),
+    ('Tierra del Fuego', FALSE),
+    ('Tucumán', FALSE),
+    ('Ciudad Autónoma de Buenos Aires', TRUE);
 
-/*select count(*) from provincias;*/
 -- =====================================================
 -- 4. TABLA PUENTE: AGLOMERADOS Y PROVINCIAS
 -- =====================================================
 
 CREATE TABLE aglomerados_provincias (
-    codigo_aglomerado CHAR(2) NOT NULL,
+    codigo_aglomerado  CHAR(2) NOT NULL,
     id_provincia SMALLINT UNSIGNED NOT NULL,
 
     PRIMARY KEY (codigo_aglomerado, id_provincia),
@@ -136,7 +125,7 @@ CREATE TABLE aglomerados_provincias (
     CONSTRAINT fk_ap_provincia
         FOREIGN KEY (id_provincia)
         REFERENCES provincias (id_provincia)
-) ENGINE = InnoDB;
+) ;
 
 
 -- =====================================================
@@ -282,12 +271,64 @@ SELECT '93', id_provincia
 FROM provincias WHERE nombre = 'Buenos Aires';
 
 
-USE estadisticas_eph;
 
-show tables;
-select * from aglomerados_eph;
-select * from aglomerados_provincias;
+-- =====================================================
+-- 5. TABLA DE HOGARES_TIC EPH
+-- =====================================================
 
+CREATE TABLE hogares_tic_eph (
+    codusu              VARCHAR(20) NOT NULL,
+    nro_hogar           INT NOT NULL,
+    realizada           VARCHAR(20),
+    ano4                SMALLINT NOT NULL,
+    trimestre           TINYINT NOT NULL,
+    codigo_aglomerado   CHAR(2) NOT NULL,
+    pond_tic            DECIMAL(12,4),
+    ih_ii_01            VARCHAR(10),
+    ih_ii_02            VARCHAR(10),
+
+    PRIMARY KEY (codusu, nro_hogar, ano4, trimestre),
+
+    CONSTRAINT fk_hogares_tic_aglomerado
+        FOREIGN KEY (codigo_aglomerado)
+        REFERENCES aglomerados_eph (codigo_aglomerado),
+
+    CONSTRAINT chk_hogares_tic_eph
+        CHECK (trimestre BETWEEN 1 AND 4)
+);
+
+
+-- =====================================================
+-- 6. TABLA DE PERSONAS_TIC EPH
+-- =====================================================
+
+CREATE TABLE personas_tic_eph (
+    codusu              VARCHAR(20) NOT NULL,
+    nro_hogar           INT NOT NULL,
+    componente          INT NOT NULL,
+    ano4                SMALLINT NOT NULL,
+    trimestre           TINYINT NOT NULL,
+    codigo_aglomerado   CHAR(2) NOT NULL,
+    pond_tic            DECIMAL(12,4),
+    respondente         VARCHAR(10),
+    ip_iii_04           VARCHAR(10),
+    ip_iii_05           VARCHAR(10),
+    ip_iii_06           VARCHAR(10),
+
+    PRIMARY KEY (codusu, nro_hogar, componente, ano4, trimestre),
+
+    CONSTRAINT fk_personas_tic_eph_aglomerados
+        FOREIGN KEY (codigo_aglomerado)
+        REFERENCES aglomerados_eph (codigo_aglomerado),
+
+    CONSTRAINT chk_personas_tic_eph_trimestre
+        CHECK (trimestre BETWEEN 1 AND 4)
+);
+
+
+-- =====================================================
+--      TABLA DE PERSONAS_TIC EPH
+-- =====================================================
 SELECT
     r.codigo_region,
     r.nombre AS region,
@@ -307,3 +348,4 @@ ORDER BY
     r.codigo_region,
     a.codigo_aglomerado,
     p.nombre;
+

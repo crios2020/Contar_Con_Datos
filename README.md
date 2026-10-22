@@ -11,9 +11,12 @@
 - Prof. Carlos Rios
 
 **Herramientas utilizadas:** 
-- SQL Maria DB
-- VSCode
-- MySQL Workbench
+- SQL:      MariaDB Community Server
+- IDE:      VSCode
+- Client:   MySQL Workbench
+- Dev:      JDK 25
+- Frontend: HTML - CSS - JS - Bootstrap
+
 
 
 
