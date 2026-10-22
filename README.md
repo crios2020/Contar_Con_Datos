@@ -14,8 +14,10 @@
 - SQL:      MariaDB Community Server
 - IDE:      VSCode
 - Client:   MySQL Workbench
-- Dev:      JDK 25
+- Dev:      JDK 25 - Java Springboot
 - Frontend: HTML - CSS - JS - Bootstrap
+
+
 
 
 
